@@ -1,0 +1,14 @@
+name: ${name}
+version: ${version}
+main: ${group}.${name.toLowerCase()}.paper.${name}Plugin
+description: This is a Paper plugin.
+author: Author
+website: https://link.to.website
+api-version: 1.19
+dependencies:
+  - name: Axios
+    required: true
+    bootstrap: false
+load-after:
+  - name: Axios
+    bootstrap: false

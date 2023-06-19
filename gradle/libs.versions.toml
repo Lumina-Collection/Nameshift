@@ -1,0 +1,9 @@
+[versions]
+paper = "1.19.4-R0.1-SNAPSHOT"
+commandapi = "9.0.3"
+axios = "1.1"
+
+[libraries]
+paper = { module = "io.papermc.paper:paper-api", version.ref = "paper" }
+commandapi-shade = { module = "dev.jorel:commandapi-bukkit-shade", version.ref = "commandapi" }
+axios = { module = "software.axios:api", version.ref = "axios" }
