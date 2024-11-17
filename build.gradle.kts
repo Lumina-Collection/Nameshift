@@ -5,13 +5,13 @@ defaultTasks("build")
 subprojects {
     apply(plugin = "java-library")
 
-    group = "software.axios.skeleton"
+    group = "net.luminacollection"
     version = "1.0-SNAPSHOT"
-    rootProject.extra.set("displayName", "PaperSkeleton")
+    rootProject.extra.set("displayName", "Nameshift")
 
     plugins.withType<JavaPlugin> {
         configure<JavaPluginExtension> {
-            toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+            toolchain.languageVersion.set(JavaLanguageVersion.of(21))
         }
     }
 
@@ -42,6 +42,8 @@ subprojects {
         maven("https://repo.papermc.io/repository/maven-public/")
         maven("https://repo.codemc.org/repository/maven-public/")
         maven("https://Loapu:${GITHUB_TOKEN}@maven.pkg.github.com/Loapu/Axios")
+        maven("https://jitpack.io")
         flatDir { dirs(project.rootDir.path + "/libs") }
+        maven("https://repo.sayandev.org/snapshots/")
     }
 }

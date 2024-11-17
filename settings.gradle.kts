@@ -1,4 +1,4 @@
-rootProject.name = "paperskeleton"
+rootProject.name = "nameshift"
 
 include("common")
 include("paper")

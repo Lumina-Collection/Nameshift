@@ -22,28 +22,29 @@
  * SOFTWARE.
  */
 
-package software.axios.skeleton.paper.commands;
+package net.luminacollection.nameshift.paper.commands;
 
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
+import org.bukkit.entity.Player;
 import software.axios.api.Axios;
 import software.axios.api.command.CommandsInterface;
-import software.axios.skeleton.common.i18n.Messages;
-import software.axios.skeleton.paper.PaperSkeletonPlugin;
+import net.luminacollection.nameshift.common.i18n.Messages;
+import net.luminacollection.nameshift.paper.NameshiftPlugin;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class CommandPaperSkeleton implements CommandsInterface
+public class CommandNameshift implements CommandsInterface
 {
-	private static CommandPaperSkeleton instance;
-	private final PaperSkeletonPlugin plugin = PaperSkeletonPlugin.instance();
+	private static CommandNameshift instance;
+	private final NameshiftPlugin plugin = NameshiftPlugin.instance();
 	private final Axios axios = plugin.axios();
 	private final CommandAPICommand command;
 	private final List<CommandAPICommand> subCommands = new ArrayList<>();
 	
-	private CommandPaperSkeleton()
+	private CommandNameshift()
 	{
 		command = new CommandAPICommand(plugin.getName().toLowerCase());
 		commandBody();
@@ -51,25 +52,27 @@ public class CommandPaperSkeleton implements CommandsInterface
 		command.withSubcommands(subCommands.toArray(new CommandAPICommand[0]));
 	}
 	
-	public static CommandPaperSkeleton instance()
+	public static CommandNameshift instance()
 	{
-		if (instance == null) instance = new CommandPaperSkeleton();
+		if (instance == null) instance = new CommandNameshift();
 		return instance;
 	}
 	
 	@SuppressWarnings("all")
 	private void commandBody()
 	{
-		command.withAliases("ps");
+		command.withAliases("ns");
 		command.withPermission(plugin.getName().toLowerCase() + ".command");
-		command.withHelp(Messages.COMMAND_PAPERSKELETON_META_SHORT_DESCRIPTION.toString(), "");
+		command.withHelp(Messages.COMMAND_NAMESHIFT_META_SHORT_DESCRIPTION.toString(), "");
 		command.executes((sender, args) ->
 		{
+			var locale = sender instanceof Player player ? player.locale() : axios.defaultLocale();
 			var meta = plugin.getPluginMeta();
 			var version = meta.getVersion();
 			var author = meta.getAuthors().get(0);
 			var description = meta.getDescription();
 			var website = meta.getWebsite();
+			if (plugin.isLocaleSupported(locale)) website = website.replace(plugin.getName().toLowerCase(), locale.getLanguage() + "/" + plugin.getName().toLowerCase());
 			var name = meta.getName();
 			var tags = axios.tagBuilder().add(Map.of(
 				"version", version,
@@ -78,7 +81,7 @@ public class CommandPaperSkeleton implements CommandsInterface
 				"website", "<click:open_url:'" + website + "'>" + website + "</click>",
 				"name", name
 			), true).build();
-			Messages.COMMAND_PAPERSKELETON_MAIN.sendTo(sender, tags);
+			Messages.COMMAND_NAMESHIFT_MAIN.sendTo(sender, tags);
 		});
 	}
 	
@@ -90,7 +93,7 @@ public class CommandPaperSkeleton implements CommandsInterface
 		subCommand.executes((sender, args) ->
 		{
 			plugin.reload();
-			Messages.COMMAND_PAPERSKELETON_SUB_RELOAD.sendTo(sender);
+			Messages.COMMAND_NAMESHIFT_SUB_RELOAD.sendTo(sender);
 		});
 		subCommands.add(subCommand);
 	}

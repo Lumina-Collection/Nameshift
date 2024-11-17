@@ -22,8 +22,18 @@
  * SOFTWARE.
  */
 
-package software.axios.skeleton.paper;
+package net.luminacollection.nameshift.paper;
 
+import net.luckperms.api.LuckPerms;
+import net.luminacollection.nameshift.common.hooks.LuckPermsHook;
+import net.luminacollection.nameshift.paper.commands.CommandName;
+import net.luminacollection.nameshift.paper.commands.CommandNameshift;
+import net.luminacollection.nameshift.paper.commands.CommandWhoIs;
+import net.luminacollection.nameshift.paper.listeners.NameshiftListeners;
+import net.luminacollection.nameshift.paper.listeners.VanishListeners;
+import net.luminacollection.nameshift.paper.listeners.SayanVanishListeners;
+import net.luminacollection.nameshift.paper.profiles.ProfileManager;
+import net.luminacollection.nameshift.paper.profiles.TeamManager;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -31,22 +41,24 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import software.axios.api.Axios;
 import software.axios.api.AxiosApiPlugin;
 import software.axios.api.command.CommandsInterface;
-import software.axios.skeleton.common.configuration.Settings;
-import software.axios.skeleton.common.i18n.Messages;
-import software.axios.skeleton.paper.commands.CommandPaperSkeleton;
+import net.luminacollection.nameshift.common.configuration.Settings;
+import net.luminacollection.nameshift.common.i18n.Messages;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
-public class PaperSkeletonPlugin extends JavaPlugin implements AxiosApiPlugin
+public class NameshiftPlugin extends JavaPlugin implements AxiosApiPlugin
 {
 	private final List<CommandsInterface> commands = new ArrayList<>();
 	private Axios axios;
 	
-	private static PaperSkeletonPlugin instance;
-	public static PaperSkeletonPlugin instance()
+	private final Locale[] extraSupportedLanguages = new Locale[] { Locale.GERMAN };
+	
+	private static NameshiftPlugin instance;
+	public static NameshiftPlugin instance()
 	{
 		return instance;
 	}
@@ -64,6 +76,13 @@ public class PaperSkeletonPlugin extends JavaPlugin implements AxiosApiPlugin
 		else throw new RuntimeException("Axios not found!");
 	}
 	
+	private void setupLuckPerms()
+	{
+		RegisteredServiceProvider<LuckPerms> provider = Bukkit.getServicesManager().getRegistration(LuckPerms.class);
+		if (provider != null) LuckPermsHook.instance().init(provider.getProvider());
+		else throw new RuntimeException("ProxyMode is enabled but LuckPerms not found!");
+	}
+	
 	private void setupSettings()
 	{
 		axios.configManager().setup(this, Settings.class);
@@ -71,13 +90,15 @@ public class PaperSkeletonPlugin extends JavaPlugin implements AxiosApiPlugin
 	
 	private void setupMessages()
 	{
-		axios.i18nManager().setup(this, Messages.class);
+		axios.i18nManager().setup(this, Messages.class, extraSupportedLanguages);
 	}
 	
 	private void setupCommands()
 	{
 		commands.addAll(Arrays.asList(
-			CommandPaperSkeleton.instance()
+			CommandNameshift.instance(),
+			CommandName.instance(),
+			CommandWhoIs.instance()
 		));
 		
 		commands.forEach(CommandsInterface::register);
@@ -87,6 +108,16 @@ public class PaperSkeletonPlugin extends JavaPlugin implements AxiosApiPlugin
 	{
 		setupSettings();
 		setupMessages();
+		if (Settings.PROXY_MODE.get()) setupLuckPerms();
+		ProfileManager.instance().refresh();
+	}
+	
+	private void setupHooks()
+	{
+		if (Bukkit.getPluginManager().isPluginEnabled("SuperVanish") || Bukkit.getPluginManager().isPluginEnabled("PremiumVanish"))
+			VanishListeners.instance();
+		if (Bukkit.getPluginManager().isPluginEnabled("VelocityVanish"))
+			SayanVanishListeners.instance();
 	}
 	
 	@Override
@@ -95,12 +126,16 @@ public class PaperSkeletonPlugin extends JavaPlugin implements AxiosApiPlugin
 		setupAxios();
 		reload();
 		setupCommands();
+		NameshiftListeners.instance();
+		TeamManager.instance();
+		setupHooks();
 	}
 	
 	@Override
 	public void onDisable()
 	{
 		commands.forEach(CommandsInterface::unregister);
+		TeamManager.instance().unregister();
 	}
 	
 	@Override
@@ -118,5 +153,21 @@ public class PaperSkeletonPlugin extends JavaPlugin implements AxiosApiPlugin
 	public Axios axios()
 	{
 		return axios;
+	}
+	
+	public boolean isLocaleSupported(Locale locale)
+	{
+		for (Locale supportedLocale : extraSupportedLanguages)
+		{
+			if (supportedLocale.equals(locale)) return true;
+			var language = locale.getLanguage();
+			if (supportedLocale.getLanguage().equals(language)) return true;
+		}
+		return false;
+	}
+	
+	public void debug(String message)
+	{
+		if (Settings.DEBUG.get()) getLogger().info("[DEBUG] " + message);
 	}
 }

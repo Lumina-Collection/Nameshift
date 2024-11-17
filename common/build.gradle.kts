@@ -1,3 +1,6 @@
 dependencies {
-    api(libs.axios)
+    implementation(libs.axios)
+    implementation(libs.luckperms)
+    implementation(libs.adventure)
+    implementation(libs.minimessage)
 }

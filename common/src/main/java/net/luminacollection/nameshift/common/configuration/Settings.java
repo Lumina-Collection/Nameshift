@@ -22,20 +22,32 @@
  * SOFTWARE.
  */
 
-package software.axios.skeleton.common.configuration;
+package net.luminacollection.nameshift.common.configuration;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 import software.axios.api.Axios;
 import software.axios.api.AxiosProvider;
 import software.axios.api.configuration.AxiosSettings;
+import software.axios.api.configuration.SettingsField;
 import software.axios.api.configuration.SettingsInterface;
 
 import java.util.List;
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class Settings<T> implements SettingsInterface
 {
-	
+	@SettingsField
+	public static final Settings<Integer> LIMITS_CHARACTER_LIMIT = new Settings<>("limits.character-limit", Integer.class, 40);
+	@SettingsField
+	public static final Settings<List> LIMITS_ALLOWED_TAGS = new Settings<>("limits.allowed-tags", List.class, List.of("color", "bold", "italic", "underlined", "strikethrough", "obfuscated", "gradient", "rainbow", "font"));
+	@SettingsField
+	public static final Settings<Boolean> DEBUG = new Settings<>("general.debug", Boolean.class, false);
+	@SettingsField
+	public static final Settings<Integer> LIMITS_PRESETS_LIMIT = new Settings<>("limits.presets-limit", Integer.class, 10);
+	@SettingsField
+	public static final Settings<Boolean> PROXY_MODE = new Settings<>("general.proxy-mode", Boolean.class, false);
+	@SettingsField
+	public static final Settings<List> CUSTOM_COLORS = new Settings<>("custom-colors", List.class, List.of("custom_color:#ff6600", "custom_gradient:#ff6600:#ff0000"));
 	
 	private final Axios axios = AxiosProvider.get();
 	private final AxiosSettings<T, Settings<T>> axiosSettings;
@@ -46,31 +58,31 @@ public class Settings<T> implements SettingsInterface
 	}
 	
 	@Override
-	public @NonNull String path()
+	public @NotNull String path()
 	{
 		return axiosSettings.path();
 	}
 	
 	@Override
-	public @NonNull List<String> comments()
+	public @NotNull List<String> comments()
 	{
 		return axiosSettings.comments();
 	}
 	
 	@Override
-	public @NonNull T get()
+	public @NotNull T get()
 	{
 		return axiosSettings.get(this);
 	}
 	
 	@Override
-	public @NonNull T defaultValue()
+	public @NotNull T defaultValue()
 	{
 		return axiosSettings.defaultValue();
 	}
 	
 	@Override
-	public @NonNull Class<T> type()
+	public @NotNull Class<T> type()
 	{
 		return axiosSettings.type();
 	}
