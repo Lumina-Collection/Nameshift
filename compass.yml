@@ -1,0 +1,18 @@
+name: Nameshift
+id: ari:cloud:compass:8c48ddcb-e436-48ae-9b29-7b72d3567c9b:component/14f32da4-ded6-4a9e-8807-a06a1f205919/d0084541-c65d-41d0-8c70-da4e14c1e723
+description: null
+configVersion: 1
+typeId: APPLICATION
+ownerId: ari:cloud:identity::team/4e2dec87-b6be-4b29-bfe2-5d371792a06a
+fields:
+  tier: 4
+links:
+  - name: null
+    type: REPOSITORY
+    url: https://github.com/Lumina-Collection/Nameshift
+relationships:
+  DEPENDS_ON: []
+labels:
+  - language:java
+  - source:github
+customFields: null
